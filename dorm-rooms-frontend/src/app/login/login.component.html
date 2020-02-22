@@ -1,0 +1,23 @@
+<section>
+  <div class="form floating table">
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Kérlek lépj be</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><label for="email">E-mail:</label></td>
+          <td><input type="text" id="email" [(ngModel)]="email" (ngModelChange)="checkIfAdminEmail()"></td>
+        </tr>
+        <tr>
+          <td><label for="password">Jelszó:</label></td>
+          <td><input type="password" id="password" [(ngModel)]="password"></td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="button" value="Belépés"><input *ngIf="isAdminEmail" type="button" value="Admin"></td>
+        </tr>
+    </table>
+  </div>
+</section>

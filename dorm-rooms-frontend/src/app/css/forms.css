@@ -1,0 +1,23 @@
+div.form {
+  display: inline-block;
+  background: rgba(109,149,206,0.6);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+div.form input[type=button],
+div.form input[type=submit],
+div.form input[type=reset] {
+  background: #ddd;
+  padding: 2% 5%;
+  margin: 0 auto;
+}
+div.form input[type=text],
+div.form input[type=password] {
+  padding: 0 3px;
+  border: 1px solid #ddd;
+  height: 20px;
+}
+div.form.table {
+  border-collapse: collapse;
+}

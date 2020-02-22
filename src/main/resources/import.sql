@@ -1,0 +1,3 @@
+insert into `person` (`id`, `email`, `invite_token`, `name`, `neptun_id`, `newbie`, `password_hash`, `password_salt`) VALUES ( 1, 'david.orcsik.prog@gmail.com', 'N/A', 'Orcsik Dávid', 'US4GMR', false, 'N/A', 'N/A' );
+insert into `person` (`id`, `email`, `invite_token`, `name`, `neptun_id`, `newbie`, `password_hash`, `password_salt`) VALUES ( 2, 'k.danihun@windowslive.com', 'N/A', 'Kriston Dániel', 'ABC123', false, 'N/A', 'N/A' );
+insert into `admin` (`id`, `person_id`) VALUES ( 1, 1 );
