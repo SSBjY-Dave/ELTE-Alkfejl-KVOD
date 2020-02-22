@@ -5,6 +5,7 @@
                                            
     Projekt ötlet:
     
+
 	Funkcionális követelmények:
 		Adminisztrátori követelmények:
 			- Lakók kapcsolatos CRUD munkavégzés lehetővététele, importálás Excelből
@@ -50,4 +51,3 @@
 	Szerepkörök:
 		- Adminisztrátor
 		- Lakó
-
