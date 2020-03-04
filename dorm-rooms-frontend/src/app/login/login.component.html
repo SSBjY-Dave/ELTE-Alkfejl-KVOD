@@ -1,23 +1,45 @@
 <section>
-  <div class="form floating table">
-    <table>
-      <thead>
-        <tr>
-          <th colspan="2">Kérlek lépj be</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><label for="email">E-mail:</label></td>
-          <td><input type="text" id="email" [(ngModel)]="email" (ngModelChange)="checkIfAdminEmail()"></td>
-        </tr>
-        <tr>
-          <td><label for="password">Jelszó:</label></td>
-          <td><input type="password" id="password" [(ngModel)]="password"></td>
-        </tr>
-        <tr>
-          <td colspan="2"><input type="button" value="Belépés"><input *ngIf="isAdminEmail" type="button" value="Admin"></td>
-        </tr>
-    </table>
+  <div class="floating">
+    <div *ngFor="let err of loginAttemptErrorList">
+      <div class="form-message form-error" [ngSwitch]="err">
+        <span class="form-message-sign"></span>
+        <span class="form-message from-error" *ngSwitchCase="LOGIN_ERRORS.EMAIL_EMPTY">
+          Üres e-mail!
+        </span>
+        <span class="form-message from-error" *ngSwitchCase=" LOGIN_ERRORS.EMAIL_SYNTAX">
+          Az e-mail cím nem megfelelő!
+        </span>
+        <span class="form-message from-error" *ngSwitchCase="LOGIN_ERRORS.PASSWORD_EMPTY">
+          Üres jelszó!
+        </span>
+        <span class="form-message from-error" *ngSwitchCase="LOGIN_ERRORS.INVALID_DATA">
+          Nem megfelelő e-mail cím vagy jelszó!
+        </span>
+      </div>
+    </div>
+    <div class="form table">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">Kérlek lépj be</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><label for="email">E-mail:</label></td>
+            <td><input type="text" id="email" [(ngModel)]="email" (ngModelChange)="checkIfAdminEmail()" autocomplete="no" (keypress)="inputFieldPressEvent($event)"></td>
+          </tr>
+          <tr>
+            <td><label for="password">Jelszó:</label></td>
+            <td><input type="password" id="password" [(ngModel)]="password" (keypress)="inputFieldPressEvent($event)"></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input type="button" value="Belépés" (click)="tryLogin(LOGIN_TYPES.AS_USER)" [disabled]="email.length == 0 || password.length == 0">
+              <input type="button" value="Admin" (click)="tryLogin(LOGIN_TYPES.AS_ADMIN)" [disabled]="email.length == 0 || password.length == 0" *ngIf="isAdminEmail">
+            </td>
+          </tr>
+      </table>
+    </div>
   </div>
 </section>

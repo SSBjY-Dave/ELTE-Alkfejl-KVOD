@@ -3,8 +3,13 @@ package hu.elte.alkfejl.DormRooms.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.elte.alkfejl.DormRooms.DormRoomsApplication;
 import lombok.EqualsAndHashCode;
@@ -13,11 +18,13 @@ import lombok.Setter;
 import lombok.ToString;
 import net.bytebuddy.build.ToStringPlugin;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 @Entity
 @EqualsAndHashCode
@@ -49,6 +56,9 @@ public class Person {
     @Column(nullable = true)
     private String passwordHash;
 
+    @Column(nullable = true)
+    private String authToken;
+
     @Column(nullable = false)
     private String inviteToken;
 
@@ -57,6 +67,7 @@ public class Person {
     private Layout layout;
 
     @ToString.Exclude
+    @JsonDeserialize(using = AdminFieldDeserializer.class)
     @JsonSerialize(using = AdminFieldSerializer.class)
     @OneToOne
     @JoinColumn(name = "id", referencedColumnName = "person_id")
@@ -79,6 +90,13 @@ public class Person {
     public static void prepareNewPerson(Person person) throws NoSuchAlgorithmException {
         person.inviteToken = generateInviteToken();
         person.passwordSalt = generatePasswordSalt();
+    }
+
+    public static void generateAuthToken(Person person) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] inviteTokenRawBytes = new byte[64];
+        DormRoomsApplication.globalSecureRandomGenerator.nextBytes(inviteTokenRawBytes);
+        person.authToken = new String(Base64.encodeBase64(md.digest(inviteTokenRawBytes)));
     }
 
     // boilerplate
@@ -110,6 +128,8 @@ public class Person {
         return passwordHash;
     }
 
+    public String getAuthToken() { return authToken; }
+
     public String getInviteToken() {
         return inviteToken;
     }
@@ -121,6 +141,23 @@ public class Person {
     public void setInviteToken(String inviteToken) {
         this.inviteToken = inviteToken;
     }
+
+    public boolean isCredentialsValid(Person user) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-512");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        assert md != null;
+        byte[] pwSaltBytes = user.passwordSalt.getBytes();
+        byte[] pwBytes = user.passwordHash.getBytes();
+        byte[] pwBytesUnion = new byte[pwBytes.length + pwSaltBytes.length];
+        for (int i = 0; i<pwSaltBytes.length; ++i) pwBytesUnion[i] = pwSaltBytes[i];
+        for (int i = 0, j = pwSaltBytes.length; i < pwBytes.length; ++i, ++j) pwBytesUnion[j] = pwBytes[i];
+        String pw = new String(Base64.encodeBase64(md.digest(pwBytesUnion)));
+        return this.passwordHash.equals(pw);
+    }
 }
 
 class AdminFieldSerializer extends JsonSerializer<Admin> {
@@ -128,5 +165,13 @@ class AdminFieldSerializer extends JsonSerializer<Admin> {
     @Override
     public void serialize(Admin admin, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeBoolean(admin != null);
+    }
+}
+
+class AdminFieldDeserializer extends JsonDeserializer<Admin> {
+
+    @Override
+    public Admin deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
+        return null;
     }
 }

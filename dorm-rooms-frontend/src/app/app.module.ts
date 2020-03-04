@@ -7,11 +7,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './authentication.service';
+import { CookieService } from 'ngx-cookie-service';
+import { ReservationComponent } from './reservation/reservation.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    ReservationComponent
   ],
   imports: [
     BrowserModule,
@@ -19,7 +22,10 @@ import { AuthenticationService } from './authentication.service';
     HttpClientModule,
     FormsModule
   ],
-  providers: [AuthenticationService],
+  providers: [
+    AuthenticationService,
+    CookieService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

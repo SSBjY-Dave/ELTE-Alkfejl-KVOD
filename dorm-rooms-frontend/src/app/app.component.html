@@ -1,2 +1,9 @@
-<app-login></app-login>
-<router-outlet></router-outlet>
+<div *ngIf="error !== ErrorType.None" class="error-container">
+  <div [ngSwitch]="error">
+    <div *ngSwitchCase="ErrorType.BackendError" class="error-text">
+      Hiba történt az adatok feldolgozásakor!
+    </div>
+  </div>
+</div>
+<router-outlet (activate)="onRouterActivate($event)" (deactivate)="onRouterDeactivate($event)"></router-outlet>
+
