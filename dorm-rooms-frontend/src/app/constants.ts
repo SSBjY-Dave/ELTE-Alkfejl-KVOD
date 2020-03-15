@@ -1,4 +1,5 @@
 export const BASIC_JSON_HTTP_HEADER = {'Content-Type': 'application/json'};
+export const BASIC_TEXT_HTTP_HEADER = {'Content-Type': 'text/plain'};
 
 export const BACKEND_SERVER_URL_PREFIX = 'http://localhost:8080/';
 export const BACKEND_SERVER_GET_USER_BY_EMAIL = BACKEND_SERVER_URL_PREFIX + 'getUserWithEmail';
@@ -8,6 +9,7 @@ export const BACKEND_SERVER_AUTHENTICATE_USER = BACKEND_SERVER_URL_PREFIX + 'aut
 
 export const COOKIE_PREFIX = 'DormRoomsCookie_';
 export const COOKIE_AUTH_TOKEN_NAME = COOKIE_PREFIX + 'auth_token';
+export const COOKIE_AUTH_TOKEN_DOMAIN = 'localhost';
 
 // Email regex according to RFC 5322 standard
 // tslint:disable-next-line:max-line-length

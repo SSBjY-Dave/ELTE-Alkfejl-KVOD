@@ -22,9 +22,20 @@ public class MainController {
     }
 
     @PostMapping("/getUserWithEmail")
-    public Person getUserWithEmail(@RequestBody Map<String, String> emailJSON) {
+    public Person getUserWithEmail(@RequestBody String email) {
         UserModeService ums = UserModeService.getInstance();
-        String email = emailJSON.get("email");
-        return (email != null) ? ums.getUserWithEmail(emailJSON.get("email")) : null;
+        return ums.getUserWithEmail(email);
+    }
+
+    @PostMapping("/isAuthTokenValid")
+    public boolean isAuthTokenValid(@RequestBody String authToken) {
+        UserModeService ums = UserModeService.getInstance();
+        return ums.getUserByAuthToken(authToken) != null;
+    }
+
+    @PostMapping("/getUserByAuthToken")
+    public Person getUserByAuthToken(@RequestBody String authToken) {
+        UserModeService ums = UserModeService.getInstance();
+        return ums.getUserByAuthToken(authToken);
     }
 }

@@ -1,8 +1,8 @@
 <section id="user_info">
-  <span id="name"></span>
-  <span id="neptun"></span>
-  <span id="current_room"></span>
-  <div><a href="" id="room_checkout">Kijelenkezés a szobából</a></div>
+  <span id="name">{{currentUser.name}}</span>
+  <span id="neptun">{{currentUser.neptunId}}</span>
+  <span id="current_room">-</span> <!-- TODO: Add room -->
+  <div><a href="" (click)="checkoutFromRoom()">Kijelenkezés a szobából</a></div>
 </section>
 <section id="view_normal">
   <section id="building"></section>

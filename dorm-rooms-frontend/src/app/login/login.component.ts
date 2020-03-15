@@ -48,6 +48,7 @@ export class LoginComponent implements OnInit {
 
   handleUserAlreadyLoggedIn(): void {
     this.authenticationService.isAuthTokenCookiePresentAndValid().then(loggedIn => {
+      console.log('asddas');
       if (loggedIn) {
         this.router.navigate(['/reservation']).then();
       }

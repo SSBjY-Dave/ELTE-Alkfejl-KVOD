@@ -33,6 +33,7 @@ public class UserModeService {
             if (personWithEmail.isCredentialsValid(user)) {
                 try {
                     Person.generateAuthToken(personWithEmail);
+                    personRepo.save(personWithEmail);
                     return personWithEmail;
                 } catch (Exception ignored) {}
             }
@@ -42,6 +43,7 @@ public class UserModeService {
     }
 
     public Person getUserWithEmail(String email) {
+        if (email == null || email.length() == 0) return null;
         Person personWithEmail = null;
         for (Person p : personRepo.findAll()) {
             if (p.getEmail().equals(email)) {
@@ -50,5 +52,17 @@ public class UserModeService {
             }
         }
         return personWithEmail;
+    }
+
+    public Person getUserByAuthToken(String authToken) {
+        if (authToken == null || authToken.length() == 0) return null;
+        Person personWithAuthToken = null;
+        for (Person p : personRepo.findAll()) {
+            if (p.getAuthToken() != null && p.getAuthToken().equals(authToken)) {
+                personWithAuthToken = p;
+                break;
+            }
+        }
+        return personWithAuthToken;
     }
 }

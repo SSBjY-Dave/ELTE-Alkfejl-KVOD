@@ -1,5 +1,5 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {User} from './model/User';
 import {CookieService} from 'ngx-cookie-service';
@@ -9,7 +9,11 @@ import {
   BACKEND_SERVER_CHECK_AUTH_TOKEN,
   BACKEND_SERVER_GET_USER_BY_AUTH_TOKEN,
   BACKEND_SERVER_GET_USER_BY_EMAIL,
-  BASIC_JSON_HTTP_HEADER, COOKIE_AUTH_TOKEN_NAME, REGEX_EMAIL
+  BASIC_JSON_HTTP_HEADER,
+  BASIC_TEXT_HTTP_HEADER,
+  COOKIE_AUTH_TOKEN_DOMAIN,
+  COOKIE_AUTH_TOKEN_NAME,
+  REGEX_EMAIL
 } from './constants';
 
 @Injectable({
@@ -36,18 +40,15 @@ export class AuthenticationService {
   }
 
   getUserWithEmail(email: string): Observable<User> {
-    const body = { email };
-    return this.http.post<User>(BACKEND_SERVER_GET_USER_BY_EMAIL, body, { headers: BASIC_JSON_HTTP_HEADER });
+    return this.http.post<User>(BACKEND_SERVER_GET_USER_BY_EMAIL, email, { headers: BASIC_TEXT_HTTP_HEADER });
   }
 
   async isAuthTokenValid(authToken: string): Promise<boolean> {
-    const body = authToken;
-    return this.http.post<boolean>(BACKEND_SERVER_CHECK_AUTH_TOKEN, body, { headers: BASIC_JSON_HTTP_HEADER }).toPromise();
+    return this.http.post<boolean>(BACKEND_SERVER_CHECK_AUTH_TOKEN, authToken, { headers: BASIC_TEXT_HTTP_HEADER }).toPromise();
   }
 
   async getUserByAuthToken(authToken: string): Promise<User> {
-    const body = authToken;
-    return this.http.post<User>(BACKEND_SERVER_GET_USER_BY_AUTH_TOKEN, body, { headers: BASIC_JSON_HTTP_HEADER }).toPromise();
+    return this.http.post<User>(BACKEND_SERVER_GET_USER_BY_AUTH_TOKEN, authToken, { headers: BASIC_TEXT_HTTP_HEADER }).toPromise();
   }
 
   async isAuthTokenCookiePresentAndValid(): Promise<boolean> {
@@ -72,7 +73,7 @@ export class AuthenticationService {
     this.currentUser = await this.http.post<User>(BACKEND_SERVER_AUTHENTICATE_USER, tempUser,
       { headers: BASIC_JSON_HTTP_HEADER }).toPromise();
     if (this.currentUser !== null) {
-      this.cookieService.set(COOKIE_AUTH_TOKEN_NAME, this.currentUser.authToken, 1, '/', 'http://localhost:4200', true);
+      this.cookieService.set(COOKIE_AUTH_TOKEN_NAME, this.currentUser.authToken, 1, null, COOKIE_AUTH_TOKEN_DOMAIN, false, 'Strict')
     }
 
     return this.currentUser !== null;
