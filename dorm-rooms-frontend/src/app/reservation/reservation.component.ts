@@ -5,8 +5,6 @@ import {Router} from '@angular/router';
 import {User} from '../model/User';
 import {Building} from '../model/Building';
 import {AssetLoaderService} from '../asset-loader.service';
-import {Floor} from '../model/Floor';
-import {log} from 'util';
 
 @Component({
   selector: 'app-reservation',
@@ -20,8 +18,8 @@ export class ReservationComponent implements OnInit {
   private router: Router;
   private assetLoaderService: AssetLoaderService;
 
-  private currentUser: User;
-  private building: Building;
+  public currentUser: User;
+  public building: Building = new Building();
 
   constructor(authenticationService: AuthenticationService, router: Router, assetLoaderService: AssetLoaderService) {
     this.authenticationService = authenticationService;
@@ -30,7 +28,7 @@ export class ReservationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.handleUserAuthenticationStatus();
+    // this.handleUserAuthenticationStatus();
     this.loadBuilding();
   }
 
@@ -51,10 +49,18 @@ export class ReservationComponent implements OnInit {
     // TODO: implement
   }
 
-  loadBuilding() {
-    this.assetLoaderService.loadAsset<Array<Floor>>('floor_maps/adk/building.json').subscribe(
-      data => console.log(data),
-        error => console.log(error)
-    );
+  async loadBuilding() {
+    this.building = await this.assetLoaderService.loadBuilding('floor_maps/adk/building.json');
+  }
+
+
+  calculateRoomX(base: number) {
+    console.log(document.getElementById('building').style.width);
+    return 0;
+  }
+
+  calculateRoomY(base: number) {
+    // console.log(document.getElementById('building').style.width);
+    return 0;
   }
 }

@@ -1,6 +1,6 @@
 import {Room} from './Room';
 
-export interface Floor {
+export class Floor {
   level: number;
-  rooms: Array<Room>;
+  rooms: Array<Room> = [];
 }

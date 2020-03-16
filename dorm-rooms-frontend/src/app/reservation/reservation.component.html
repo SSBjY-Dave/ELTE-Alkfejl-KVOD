@@ -1,17 +1,59 @@
-<section id="user_info">
-  <span id="name">{{currentUser.name}}</span>
-  <span id="neptun">{{currentUser.neptunId}}</span>
-  <span id="current_room">-</span> <!-- TODO: Add room -->
-  <div><a href="" (click)="checkoutFromRoom()">Kijelenkezés a szobából</a></div>
-</section>
+<!--<section id="user_info">-->
+<!--  <span id="name">{{currentUser.name}}</span>-->
+<!--  <span id="neptun">{{currentUser.neptunId}}</span>-->
+<!--  <span id="current_room">-</span> &lt;!&ndash; TODO: Add room &ndash;&gt;-->
+<!--  <div><a href="" (click)="checkoutFromRoom()">Kijelenkezés a szobából</a></div>-->
+<!--</section>-->
 <section id="view_normal">
-  <section id="building"></section>
+  <section id="building">
+    <article *ngFor="let floor of building.floors" [ngStyle]="{
+      'background-image': 'url(../../assets/floor_maps/adk/pics/floor_' + floor.level + ').svg',
+      'z-index': 99 - floor.level
+     }">
+      <div *ngFor="let room of floor.rooms" [attr.data-level]="floor.level" [attr.data-room]="room.num" [ngStyle]="{
+        'top': calculateRoomY(room.offset.y),
+        'left': calculateRoomX(room.offset.x),
+        'width': calculateRoomX(room.size.width),
+        'height': calculateRoomY(room.size.height)
+      }">
+        <ul>
+          <li>RESIDENT 1</li>
+          <li>RESIDENT 2</li>
+        </ul>
+      </div>
+    </article>
+  </section>
   <section id="building_level_selector">
     <div class="overlay"></div>
-    <div class="levels"></div>
+    <div class="levels">
+      <div *ngFor="let floor of building.floors">{{floor.level}}. em</div>
+    </div>
   </section>
 </section>
 <section id="view_simple">
+  <table *ngFor="let floor of building.floors">
+    <caption>{{floor.level}}. emelet</caption>
+    <tr>
+      <th>Szoba</th>
+      <th>Régi lakók</th>
+      <th>Új lakók</th>
+      <th></th>
+    </tr>
+    <tr *ngFor="let room of floor.rooms">
+      <td class="number">{{((room.num < 10) ? '0' : '') + room.num}}</td>
+      <td class="old_residence">
+        <div>RESIDENT 1</div>
+        <div>RESIDENT 2</div>
+      </td>
+      <td class="new_residence">
+        <div>NEW RESIDENT 1</div>
+        <div>NEW RESIDENT 2</div>
+      </td>
+      <td>
+        <button [attr.data-level]="floor.level" [attr.data-room]="room.num">Jelentkezés</button>
+      </td>
+    </tr>
+  </table>
 </section>
 
 <div id="page_overlay">
