@@ -1,21 +1,27 @@
 <!--<section id="user_info">-->
-<!--  <span id="name">{{currentUser.name}}</span>-->
-<!--  <span id="neptun">{{currentUser.neptunId}}</span>-->
+<!--  <span id="name">USERNAME &lt;!&ndash; {{currentUser.name}} &ndash;&gt;</span>-->
+<!--  <span id="neptun">NEPTUN &lt;!&ndash; {{currentUser.neptunId}} &ndash;&gt;</span>-->
 <!--  <span id="current_room">-</span> &lt;!&ndash; TODO: Add room &ndash;&gt;-->
-<!--  <div><a href="" (click)="checkoutFromRoom()">Kijelenkezés a szobából</a></div>-->
+<!--  <div><a href="" (click)="checkoutFromRoom($event)">Kijelenkezés a szobából</a></div>-->
 <!--</section>-->
 <section id="view_normal">
-  <section id="building">
-    <article *ngFor="let floor of building.floors" [ngStyle]="{
-      'background-image': 'url(../../assets/floor_maps/adk/pics/floor_' + floor.level + ').svg',
-      'z-index': 99 - floor.level
-     }">
-      <div *ngFor="let room of floor.rooms" [attr.data-level]="floor.level" [attr.data-room]="room.num" [ngStyle]="{
-        'top': calculateRoomY(room.offset.y),
-        'left': calculateRoomX(room.offset.x),
-        'width': calculateRoomX(room.size.width),
-        'height': calculateRoomY(room.size.height)
-      }">
+  <section id="building" [style.top]="this.buildingOffset + '%'">
+    <article #floorRenderer *ngFor="let floor of building.floors; let i = index; let lastItem = last"
+             [attr.data-index]="i"
+             [style.background-image]="'url(/assets/floor_maps/adk/pics/floor_' + floor.level + '.svg)'"
+             [style.z-index]="99 - floor.level"
+             [class.active]="i === this.shownFloor"
+             [class.offset-bottom]="i === this.shownFloor - 1"
+             [class.offset-top]="i === this.shownFloor + 1"
+             [class.floor]="true">
+      <div *ngFor="let room of floor.rooms"
+           [attr.data-level]="floor.level"
+           [attr.data-room]="room.num"
+           [style.top]="calculateRoomY(room.offset.y)"
+           [style.left]="calculateRoomX(room.offset.x)"
+           [style.width]="calculateRoomX(room.size.width)"
+           [style.height]="calculateRoomY(room.size.height)"
+           (click)="showPageOverlay($event)">
         <ul>
           <li>RESIDENT 1</li>
           <li>RESIDENT 2</li>
@@ -24,9 +30,9 @@
     </article>
   </section>
   <section id="building_level_selector">
-    <div class="overlay"></div>
+    <div class="overlay" [style.top]="this.buildingLevelSelectorOverlayOffset"></div>
     <div class="levels">
-      <div *ngFor="let floor of building.floors">{{floor.level}}. em</div>
+      <div *ngFor="let floor of building.floors; let i = index" (click)="this.showFloor(i)">{{floor.level}}. em</div>
     </div>
   </section>
 </section>
@@ -50,7 +56,7 @@
         <div>NEW RESIDENT 2</div>
       </td>
       <td>
-        <button [attr.data-level]="floor.level" [attr.data-room]="room.num">Jelentkezés</button>
+        <button [attr.data-level]="floor.level" [attr.data-room]="room.num" (click)="showPageOverlay($event)">Jelentkezés</button>
       </td>
     </tr>
   </table>
@@ -61,7 +67,10 @@
     <h2>Jelentkezés</h2>
     <p class="base_message">Biztos szeretnél jelentkezni <span class="room_number_formated"></span> szobába<span class="non_empty_suffix"> <span class="roommate_name"></span> szobatársaként</span>?</p>
     <p class="changing_room">Jelenleg be vagy jelentkezve <span class="room_number_formated"></span> szobába<span class="non_empty_suffix"> <span class="roommate_name"></span> szobatársaként</span>.</p>
-    <div><button class="apply">Jelentkezés</button><button class="cancel">Mégse</button></div>
+    <div>
+      <button class="apply" (click)="this.applyForRoom()">Jelentkezés</button>
+      <button class="cancel" (click)="this.pageOverlayElement.classList.remove('active')">Mégse</button>
+    </div>
   </section>
   <section id="notify_box" class="box">
     <p></p>
