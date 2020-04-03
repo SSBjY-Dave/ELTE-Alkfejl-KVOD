@@ -1,0 +1,24 @@
+@keyframes error-container-slide-in {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.error-container {
+  background: red;
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: 0 0 1rem 1rem;
+  width: 80%;
+
+  animation: 1s linear error-container-slide-in;
+}
+
+.error-text {
+  text-align: center;
+  font-size: 1.5rem;
+}
