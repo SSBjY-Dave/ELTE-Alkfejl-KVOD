@@ -2,7 +2,6 @@ package hu.elte.alkfejl.DormRooms.controller;
 
 import hu.elte.alkfejl.DormRooms.model.Person;
 import hu.elte.alkfejl.DormRooms.service.UserModeService;
-import javafx.util.Pair;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

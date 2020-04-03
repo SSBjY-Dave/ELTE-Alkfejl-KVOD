@@ -9,12 +9,14 @@ import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './authentication.service';
 import { CookieService } from 'ngx-cookie-service';
 import { ReservationComponent } from './reservation/reservation.component';
+import { RegistrationComponent } from './registration/registration.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ReservationComponent
+    ReservationComponent,
+    RegistrationComponent
   ],
   imports: [
     BrowserModule,
