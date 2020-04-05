@@ -21,9 +21,10 @@ import java.util.Set;
 public class Labels {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
-    @Column
+    @Column(nullable = false)
     private String label;
 
     @ManyToMany(mappedBy = "labels")

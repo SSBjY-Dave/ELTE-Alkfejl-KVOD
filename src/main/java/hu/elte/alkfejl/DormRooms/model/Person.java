@@ -26,6 +26,7 @@ import java.util.List;
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int id;
 
     @Column(nullable = false)
@@ -145,21 +146,5 @@ public class Person {
         for (int i = 0, j = pwSaltBytes.length; i < pwBytes.length; ++i, ++j) pwBytesUnion[j] = pwBytes[i];
         String pw = new String(Base64.encodeBase64(md.digest(pwBytesUnion)));
         return this.passwordHash.equals(pw);
-    }
-}
-
-class AdminFieldSerializer extends JsonSerializer<Admin> {
-
-    @Override
-    public void serialize(Admin admin, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeBoolean(admin != null);
-    }
-}
-
-class AdminFieldDeserializer extends JsonDeserializer<Admin> {
-
-    @Override
-    public Admin deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
-        return null;
     }
 }
