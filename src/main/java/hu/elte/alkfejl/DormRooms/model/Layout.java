@@ -1,25 +1,29 @@
 package hu.elte.alkfejl.DormRooms.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.*;
 
 import javax.persistence.*;
 
+
 @Entity
+@Data
 @EqualsAndHashCode
-@Getter
-@Setter
-@Table(name = "layout")
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Layout {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     protected int id;
 
-    @Column(name = "room_id", nullable = false)
-    private int roomId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
+    private Room room;
 
-    @Column(name = "resident_id", nullable = false)
-    private int residentId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
+    private Person person;
 }
