@@ -5,7 +5,7 @@ insert into `labels` (`label`) VALUES ( 'Autista' );
 insert into `labels` (`label`) VALUES ( 'Külföldi' );
 
 -- Persons
-insert into `person` (`email`, `invite_token`, `name`, `neptun_id`, `newbie`, `password_hash`, `password_salt`) VALUES ('david.orcsik.prog@gmail.com',  '/3NdmpUWlClv2+CaZXYS9gporATzzVZwvTqFH4ShZBE=', 'Orcsik Dávid', 'US4GMR', false, 'poP2suuLKKBPieTLWtrNTAaUTaeqhYpoL1AWvpwpplSPdTMn6MZgi4vYzFkdRvnsrhu81lp1uTIe3O1Qe/DFOQ==', 'w0iDjZkj9EG1xo2jNorgJ5FEtgRLgTHAuzQ3Njhma3Q' );
+insert into `person` (`email`, `invite_token`, `name`, `neptun_id`, `newbie`, `password_hash`, `password_salt`, `gender`) VALUES ('david.orcsik.prog@gmail.com',  '/3NdmpUWlClv2+CaZXYS9gporATzzVZwvTqFH4ShZBE=', 'Orcsik Dávid', 'US4GMR', false, 'poP2suuLKKBPieTLWtrNTAaUTaeqhYpoL1AWvpwpplSPdTMn6MZgi4vYzFkdRvnsrhu81lp1uTIe3O1Qe/DFOQ==', 'w0iDjZkj9EG1xo2jNorgJ5FEtgRLgTHAuzQ3Njhma3Q', 'MALE' );
 
 -- Admins
 insert into `admin` (`person_id`) VALUES ( 1 );
@@ -161,3 +161,5 @@ insert into `room` (`level`, `room_number`, `capacity`, `state`, `type`) VALUES 
 insert into `room` (`level`, `room_number`, `capacity`, `state`, `type`) VALUES ( 9, 13, 2, 'AVAILABLE', 'MIXED' );
 insert into `room` (`level`, `room_number`, `capacity`, `state`, `type`) VALUES ( 9, 14, 2, 'AVAILABLE', 'MIXED' );
 insert into `room` (`level`, `room_number`, `capacity`, `state`, `type`) VALUES ( 9, 15, 2, 'AVAILABLE', 'MIXED' );
+
+insert into `layout` (`person_id`, `room_id`) VALUES ( 1, 23 );

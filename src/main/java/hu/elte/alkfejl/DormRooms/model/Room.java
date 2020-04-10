@@ -34,6 +34,7 @@ public class Room {
     private int capacity;
 
     @OneToMany(mappedBy = "room")
+    @ToString.Exclude
     private List<Layout> layouts;
 
     @Enumerated(EnumType.STRING)
@@ -42,4 +43,58 @@ public class Room {
     @Enumerated(EnumType.STRING)
     private RoomType type;
 
+    public Layout getPersonReservation(Person p) {
+        for (Layout l : layouts) {
+            if (l.getPerson().equals(p)) {
+                return l;
+            }
+        }
+
+        return null;
+    }
+
+    // boilerplate
+    public int getId() {
+        return id;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getRoomNumber() {
+        return room_number;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public List<Layout> getLayouts() {
+        return layouts;
+    }
+
+    public RoomState getState() {
+        return state;
+    }
+
+    public void setState(RoomState state) {
+        this.state = state;
+    }
+
+    public RoomType getType() {
+        return type;
+    }
+
+    public void removeLayout(Layout layout) {
+        layouts.remove(layout);
+    }
+
+    public void setType(RoomType type) {
+        this.type = type;
+    }
 }

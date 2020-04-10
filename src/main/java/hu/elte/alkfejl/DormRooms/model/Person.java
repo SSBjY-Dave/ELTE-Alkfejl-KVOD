@@ -1,18 +1,11 @@
 package hu.elte.alkfejl.DormRooms.model;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import hu.elte.alkfejl.DormRooms.DormRoomsApplication;
 import lombok.*;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -53,13 +46,18 @@ public class Person {
     @Column(nullable = false)
     private String inviteToken;
 
-    @OneToOne
-    @JoinColumn(name = "id", referencedColumnName = "resident_id")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
+
+    @OneToOne(mappedBy = "person")
+    @ToString.Exclude
     private Layout layout;
 
     @ManyToMany
     @JoinTable
-    private List<Labels> labels;
+    @ToString.Exclude
+    private List<Label> labels;
 
 
     private static String generateInviteToken() throws NoSuchAlgorithmException {
@@ -146,5 +144,25 @@ public class Person {
         for (int i = 0, j = pwSaltBytes.length; i < pwBytes.length; ++i, ++j) pwBytesUnion[j] = pwBytes[i];
         String pw = new String(Base64.encodeBase64(md.digest(pwBytesUnion)));
         return this.passwordHash.equals(pw);
+    }
+
+    public void removeLayout() {
+        layout = null;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void addLabel(Label label) {
+        if (!labels.contains(label)) {
+            labels.add(label);
+        }
+    }
+
+    public void removeLabel(Label label) {
+        if (labels.contains(label)) {
+            labels.remove(label);
+        }
     }
 }
