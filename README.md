@@ -9,7 +9,7 @@
 	Funkcionális követelmények:
 		Adminisztrátori követelmények:
 			- Lakók kapcsolatos CRUD munkavégzés lehetővététele, importálás Excelből
-			    - Lakók számára meghívó email készítése sablon alapján, konfigurált SMTP kapcsolat esetén ezek tömeges kiküldése
+				- Lakók számára meghívó email készítése sablon alapján, konfigurált SMTP kapcsolat esetén ezek tömeges kiküldése
 			- Lakók szobafoglalási állapotának manuális módosítása
 			- Szobák speciális státuszba rakása, ezek:
 				- Nem elérhető
@@ -19,6 +19,7 @@
 				- Kevert szoba (alap)
 			- Szoba kapacitásának felülbírálása
 			- Jelenlegi foglaltségi állapot megtekintése, Excelből/be importálás/exportálás
+			- Lakókhoz cimkék rendelése, ezeknek a cimkéknek létrehozása, törlése, módosítása.
 		Felhasználói követelmények:
 			- Szobák jelenlegi állapotának megtekintése
 			- Jelentkezés szobába
