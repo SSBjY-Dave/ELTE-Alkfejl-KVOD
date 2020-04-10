@@ -19,11 +19,29 @@ public class Layout {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "room_id", referencedColumnName = "id")
     private Room room;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
+
+    public Layout(Person person, Room room) {
+        this.person = person;
+        this.room = room;
+    }
+
+    // boilerplate
+    public int getId() {
+        return id;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
 }
