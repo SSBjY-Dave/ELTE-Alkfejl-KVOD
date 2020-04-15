@@ -1,94 +1,89 @@
 package hu.elte.alkfejl.DormRooms.controller;
 
-import hu.elte.alkfejl.DormRooms.model.Person;
-import hu.elte.alkfejl.DormRooms.model.RoomState;
-import hu.elte.alkfejl.DormRooms.model.RoomType;
+import hu.elte.alkfejl.DormRooms.model.*;
 import hu.elte.alkfejl.DormRooms.service.AdminModeService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
 public class AdminController {
-    @PostMapping("/addPerson")
-    public Person addPerson(Person p) {
+    @PostMapping("/admin/addPerson")
+    public Person addPerson(@RequestBody Person p) {
         AdminModeService ams = AdminModeService.getInstance();
         return ams.addPerson(p);
     }
 
-    @PostMapping("/updatePerson")
-    public Person updatePerson(Person p) {
+    @PostMapping("/admin/updatePerson")
+    public Person updatePerson(@RequestBody Person p) {
         AdminModeService ams = AdminModeService.getInstance();
         return ams.updatePerson(p);
     }
 
-    @PostMapping("/deletePerson")
-    public boolean deletePerson(Person p) {
+    @PostMapping("/admin/deletePerson")
+    public boolean deletePerson(@RequestBody Person p) {
         AdminModeService ams = AdminModeService.getInstance();
         return ams.deletePerson(p);
     }
 
-    @PostMapping("/forceReserve")
-    public boolean forceReserve(int person_id, int room_id) {
+    @PostMapping("/admin/forceReserve/{room}")
+    public boolean forceReserve(@PathVariable("room") int room_id, @RequestBody Person person) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.forceReserve(person_id, room_id);
+        return ams.forceReserve(person, ams.getRoomById(room_id));
     }
 
-    @PostMapping("/forceRemoveReservation")
-    public boolean forceRemoveReservation(int person_id) {
+    @PostMapping("/admin/forceRemoveReservation")
+    public boolean forceRemoveReservation(@RequestBody Person p) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.forceRemoveReservation(person_id);
+        return ams.forceRemoveReservation(p);
     }
 
-    @PostMapping("/forceRoomType")
-    public boolean forceRoomType(int room_id, RoomType type) {
+    @PostMapping("/admin/forceRoomType/{room}")
+    public boolean forceRoomType(@PathVariable("room") int room, @RequestBody RoomType type) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.forceRoomType(room_id, type);
+        return ams.forceRoomType(ams.getRoomById(room), type);
     }
 
-    @PostMapping("/setRoomCapacity")
-    public boolean setRoomCapacity(int room_id, int capacity) {
+    @PostMapping("/admin/setRoomCapacity/{room}")
+    public boolean setRoomCapacity(@PathVariable("room") int room, @RequestBody int capacity) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.setRoomCapacity(room_id, capacity);
+        return ams.setRoomCapacity(ams.getRoomById(room), capacity);
     }
 
-    @PostMapping("/setRoomState")
-    public boolean setRoomState(int room_id, RoomState state) {
+    @PostMapping("/admin/setRoomState/{room}")
+    public boolean setRoomState(@PathVariable("room") int room, @RequestBody RoomState state) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.setRoomState(room_id, state);
+        return ams.setRoomState(ams.getRoomById(room), state);
     }
 
-    @PostMapping("/addLabel")
-    public boolean addLabel(String label) {
+    @PostMapping("/admin/addLabel")
+    public boolean addLabel(@RequestBody String label) {
         AdminModeService ams = AdminModeService.getInstance();
         return ams.addLabel(label);
     }
 
-    @PostMapping("/deleteLabel")
-    public boolean deleteLabel(int label_id) {
+    @PostMapping("/admin/deleteLabel")
+    public boolean deleteLabel(@RequestBody Label label) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.deleteLabel(label_id);
+        return ams.deleteLabel(label);
     }
 
-    @PostMapping("/modifyLabel")
-    public boolean modifyLabel(int label_id, String newLabel) {
+    @PostMapping("/admin/modifyLabel/{label}")
+    public boolean modifyLabel(@PathVariable("label") int label, String text) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.modifyLabel(label_id, newLabel);
+        return ams.modifyLabel(ams.getLabelById(label), text);
     }
 
-    @PostMapping("/assignLabelToPerson")
-    public boolean assignLabelToPerson(int person_id, int label_id) {
+    @PostMapping("/admin/assignLabelToPerson/{label}")
+    public boolean assignLabelToPerson(@PathVariable("label") int label, @RequestBody Person person) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.assignLabelToPerson(person_id, label_id);
+        return ams.assignLabelToPerson(person, ams.getLabelById(label));
     }
 
-    @PostMapping("/removeLabelFromPerson")
-    public boolean removeLabelFromPerson(int person_id, int label_id) {
+    @PostMapping("/admin/removeLabelFromPerson/{label}")
+    public boolean removeLabelFromPerson(@PathVariable("label") int label, @RequestBody Person person) {
         AdminModeService ams = AdminModeService.getInstance();
-        return ams.removeLabelFromPerson(person_id, label_id);
+        return ams.removeLabelFromPerson(person, ams.getLabelById(label));
     }
 }

@@ -1,11 +1,12 @@
 package hu.elte.alkfejl.DormRooms.service;
 
 import hu.elte.alkfejl.DormRooms.model.*;
-import hu.elte.alkfejl.DormRooms.model.Label;
+import hu.elte.alkfejl.DormRooms.security.AuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
+import java.util.stream.StreamSupport;
 
 @Service
 public class AdminModeService extends UserModeService {
@@ -13,132 +14,110 @@ public class AdminModeService extends UserModeService {
     protected final LabelRepo labelRepo;
 
     @Autowired
-    public AdminModeService(PersonRepo personRepo, RoomRepo roomRepo, LayoutRepo layoutRepo, LabelRepo labelRepo) {
-        super(personRepo, roomRepo, layoutRepo);
-        AdminModeService.instance = this;
+    protected AdminModeService(PersonRepo personRepo, RoomRepo roomRepo, LayoutRepo layoutRepo, LabelRepo labelRepo, BCryptPasswordEncoder passwordEncoder, AuthenticatedUser user) {
+        super(personRepo, roomRepo, layoutRepo, passwordEncoder, user);
         this.labelRepo = labelRepo;
+        AdminModeService.instance = this;
     }
 
     public static AdminModeService getInstance() {
+        assert instance != null;
         return instance;
     }
 
-    public Person addPerson(Person p) {
-        try {
-            Person.prepareNewPerson(p);
-            personRepo.save(p);
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
-        return p;
+    public Room getRoomById(int id) {
+        return roomRepo.findById(id).orElse(null);
     }
 
-    public Person updatePerson(Person p) {
-        if (getPersonById(p.getId()) != null) {
-            personRepo.save(p);
-        }
-        return getPersonById(p.getId());
+    public Label getLabelById(int id) {
+        return labelRepo.findById(id).orElse(null);
     }
 
-    public boolean deletePerson(Person p) {
-        if (getPersonById(p.getId()) == null) return false;
-        personRepo.deleteById(p.getId());
+    public Label[] getLabels() {
+        return (Label[]) StreamSupport.stream(labelRepo.findAll().spliterator(), false).toArray();
+    }
+
+    public Person addPerson(Person person) {
+        if (personRepo.findByEmail(person.getEmail()).isPresent()) return null;
+
+        person.setRole(Role.RESIDENT);
+        return personRepo.save(person);
+    }
+
+    public Person updatePerson(Person person) {
+        if (personRepo.findByEmail(person.getEmail()).isEmpty()) return null;
+        return personRepo.save(person);
+    }
+
+    public boolean deletePerson(Person person) {
+        if (person == null) return false;
+
+        personRepo.delete(person);
         return true;
     }
 
-    public boolean forceReserve(int person_id, int room_id) {
-        Room room = getRoomById(room_id);
-        synchronized (LayoutRepo.synchronizationObject) {
-            Person person = getPersonById(person_id);
-            if (person.getLayout() != null) layoutRepo.delete(person.getLayout());
-
-            if (room.getLayouts().size() >= room.getCapacity()) return false;
-            Layout reservation = new Layout(person, room);
-            layoutRepo.save(reservation);
-        }
-        return true;
+    public boolean forceReserve(Person person, Room room) {
+        return reserveRoom(person, room);
     }
 
-    public boolean forceRemoveReservation(int person_id) {
-        Layout reservation = getReservation(person_id);
-        if (reservation == null) return false;
-        layoutRepo.delete(reservation);
-        return true;
+    public boolean forceRemoveReservation(Person person) {
+        return cancelReservation(person);
     }
 
-    public boolean forceRoomType(int room_id, RoomType type) {
-        Room room = getRoomById(room_id);
-        if (room == null) return false;
-        for (Layout l : room.getLayouts()) {
-            if (!type.isGenderAllowed(l.getPerson().getGender())) return false;
-        }
-        room.setType(type);
-        roomRepo.save(room);
-        return true;
+    public boolean forceRoomType(Room room, RoomType type) {
+        return setRoomType(room, type);
     }
 
-    public boolean setRoomCapacity(int room_id, int capacity) {
-        Room room = getRoomById(room_id);
-        if (room.getLayouts().size() > capacity) return false;
+    public boolean setRoomCapacity(Room room, int capacity) {
+        if (room == null || !roomRepo.existsById(room.getId()) || room.getLayouts().size() > capacity) return false;
+
         room.setCapacity(capacity);
         roomRepo.save(room);
         return true;
     }
 
-    public boolean setRoomState(int room_id, RoomState state) {
-        Room room = getRoomById(room_id);
-        if (room == null) return false;
+    public boolean setRoomState(Room room, RoomState state) {
+        if (room == null || !roomRepo.existsById(room.getId()) || state == null) return false;
+
         room.setState(state);
         roomRepo.save(room);
         return true;
     }
 
-    public boolean addLabel(String label) {
-        for (Label l : labelRepo.findAll()) {
-            if (l.getLabel().equals(label)) return false;
-        }
+    public boolean addLabel(String text) {
+        if (labelRepo.findLabelByText(text).isPresent()) return false;
+
         Label newLabel = new Label();
-        newLabel.setLabel(label);
+        newLabel.setText(text);
         labelRepo.save(newLabel);
         return true;
     }
 
-    public Label getLabelById(int label_id) {
-        return labelRepo.findById(label_id).orElse(null);
-    }
-
-    public boolean deleteLabel(int label_id) {
-        Label label = getLabelById(label_id);
+    public boolean deleteLabel(Label label) {
         if (label == null) return false;
+
         labelRepo.delete(label);
         return true;
     }
 
-    public boolean modifyLabel(int label_id, String newLabel) {
-        Label label = getLabelById(label_id);
-        if (label == null) return false;
-        label.setLabel(newLabel);
+    public boolean modifyLabel(Label label, String text) {
+        if (label == null || labelRepo.findLabelByText(text).isPresent() || text == null || text.isBlank()) return false;
+
+        label.setText(text);
         labelRepo.save(label);
         return true;
     }
 
-    public boolean assignLabelToPerson(int person_id, int label_id) {
-        Person person = getPersonById(person_id);
-        if (person == null) return false;
-
-        Label label = getLabelById(label_id);
-        if (label == null) return false;
+    public boolean assignLabelToPerson(Person person, Label label) {
+        if (person == null || personRepo.existsById(person.getId()) || label == null || labelRepo.existsById(label.getId())) return false;
 
         person.addLabel(label);
+        personRepo.save(person);
         return true;
     }
 
-    public boolean removeLabelFromPerson(int person_id, int label_id) {
-        Person person = getPersonById(person_id);
-        if (person == null) return false;
-
-        Label label = getLabelById(label_id);
-        if (label == null) return false;
+    public boolean removeLabelFromPerson(Person person, Label label) {
+        if (person == null || personRepo.existsById(person.getId()) || label == null || labelRepo.existsById(label.getId())) return false;
 
         person.removeLabel(label);
         return true;

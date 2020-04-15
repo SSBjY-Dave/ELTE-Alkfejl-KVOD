@@ -1,14 +1,11 @@
 -- Labels
-insert into `labels` (`label`) VALUES ( 'Hallás sérült' );
-insert into `labels` (`label`) VALUES ( 'Látás sérült' );
-insert into `labels` (`label`) VALUES ( 'Autista' );
-insert into `labels` (`label`) VALUES ( 'Külföldi' );
+insert into `label` (`text`) VALUES ( 'Hallás sérült' );
+insert into `label` (`text`) VALUES ( 'Látás sérült' );
+insert into `label` (`text`) VALUES ( 'Autista' );
+insert into `label` (`text`) VALUES ( 'Külföldi' );
 
 -- Persons
-insert into `person` (`email`, `invite_token`, `name`, `neptun_id`, `newbie`, `password_hash`, `password_salt`, `gender`) VALUES ('david.orcsik.prog@gmail.com',  '/3NdmpUWlClv2+CaZXYS9gporATzzVZwvTqFH4ShZBE=', 'Orcsik Dávid', 'US4GMR', false, 'poP2suuLKKBPieTLWtrNTAaUTaeqhYpoL1AWvpwpplSPdTMn6MZgi4vYzFkdRvnsrhu81lp1uTIe3O1Qe/DFOQ==', 'w0iDjZkj9EG1xo2jNorgJ5FEtgRLgTHAuzQ3Njhma3Q', 'MALE' );
-
--- Admins
-insert into `admin` (`person_id`) VALUES ( 1 );
+insert into `person` (`email`, `invite_token`, `name`, `neptun_id`, `newbie`, `password`, `gender`, `role`) VALUES ('david.orcsik.prog@gmail.com',  '/3NdmpUWlClv2+CaZXYS9gporATzzVZwvTqFH4ShZBE=', 'Orcsik Dávid', 'US4GMR', false, '$2a$10$k0q4o9pgCnV8uH3uNz2Wke4VpY307pvOx7F1J8IFFaSsV138FXGzi', 'MALE', 'ADMIN' );
 
 -- Rooms
 insert into `room` (`level`, `room_number`, `capacity`, `state`, `type`) VALUES ( 0, 1, 2, 'AVAILABLE', 'MIXED' );

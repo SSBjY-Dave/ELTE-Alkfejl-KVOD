@@ -7,7 +7,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -22,18 +21,21 @@ public class Label {
     private int id;
 
     @Column(nullable = false)
-    private String label;
+    private String text;
 
     @ManyToMany(mappedBy = "labels")
-    @JsonIgnore
     @ToString.Exclude
     private List<Person> persons;
 
-    public String getLabel() {
-        return label;
+    public int getId() {
+        return id;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String label) {
+        this.text = label;
     }
 }

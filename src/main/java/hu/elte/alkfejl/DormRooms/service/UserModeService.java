@@ -1,12 +1,12 @@
 package hu.elte.alkfejl.DormRooms.service;
 
 import hu.elte.alkfejl.DormRooms.model.*;
+import hu.elte.alkfejl.DormRooms.security.AuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -16,12 +16,16 @@ public class UserModeService {
     protected final PersonRepo personRepo;
     protected final RoomRepo roomRepo;
     protected final LayoutRepo layoutRepo;
+    protected final BCryptPasswordEncoder passwordEncoder;
+    protected final AuthenticatedUser user;
 
     @Autowired
-    public UserModeService(PersonRepo personRepo, RoomRepo roomRepo, LayoutRepo layoutRepo) {
+    protected UserModeService(PersonRepo personRepo, RoomRepo roomRepo, LayoutRepo layoutRepo, BCryptPasswordEncoder passwordEncoder, AuthenticatedUser user) {
         this.personRepo = personRepo;
         this.roomRepo = roomRepo;
         this.layoutRepo = layoutRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.user = user;
         UserModeService.instance = this;
     }
 
@@ -30,52 +34,25 @@ public class UserModeService {
         return instance;
     }
 
-    private boolean isUserAuthenticatable(Person user) {
-        return user != null && user.getPasswordHash() != null;
-    }
-    
-    public Person authenticateUser(Person user) {
-        Person personWithEmail = getUserWithEmail(user.getEmail());
+    public boolean setPassword(String inviteToken, String password) {
+        Optional<Person> oPerson = personRepo.findByInviteToken(inviteToken);
+        if (oPerson.isEmpty() || password == null || password.isBlank()) return false;
 
-        if (isUserAuthenticatable(user)) {
-            if (personWithEmail.isCredentialsValid(user)) {
-                try {
-                    Person.generateAuthToken(personWithEmail);
-                    return personWithEmail;
-                } catch (Exception ignored) {}
-            }
-        }
-
-        return null;
-    }
-
-    public Person getUserWithEmail(String email) {
-        Person personWithEmail = null;
-        for (Person p : personRepo.findAll()) {
-            if (p.getEmail().equals(email)) {
-                personWithEmail = p;
-                break;
-            }
-        }
-        return personWithEmail;
+        Person person = oPerson.get();
+        person.setPassword(passwordEncoder.encode(password));
+        personRepo.save(person);
+        return true;
     }
 
     public Room[] getRooms() {
         return StreamSupport.stream(roomRepo.findAll().spliterator(), false).toArray(Room[]::new);
     }
 
-    protected Person getPersonById(int id) {
-        return personRepo.findById(id).orElse(null);
+    public boolean reserveRoom(Room room) {
+        return reserveRoom(user.getUser(), room);
     }
 
-    protected Room getRoomById(int id) {
-        return roomRepo.findById(id).orElse(null);
-    }
-
-    public boolean reserveRoom(int person_id, int room_id) {
-        Person person = getPersonById(person_id);
-        Room room = getRoomById(room_id);
-
+    public boolean reserveRoom(Person person, Room room) {
         if (person == null || room == null) return false;
 
         Layout layout = person.getLayout();
@@ -85,43 +62,43 @@ public class UserModeService {
             if (room.getLayouts().size() == room.getCapacity()) return false;
             if (!room.getType().isGenderAllowed(person.getGender())) return false;
 
-            if (layout != null) cancelReservation(person_id);
+            if (layout != null) cancelReservation(person);
             layout = new Layout(person, room);
             layoutRepo.save(layout);
         }
-
         return true;
     }
 
-    public Layout getReservation(int person_id) {
-        Person person = getPersonById(person_id);
-        if (person == null) return null;
-
-        return person.getLayout();
+    public boolean cancelReservation() {
+        return cancelReservation(user.getUser());
     }
 
-    public boolean cancelReservation(int person_id) {
-        Layout reservation = getReservation(person_id);
+    public boolean cancelReservation(Person person) {
+        if (person == null) return false;
 
+        Layout reservation = person.getLayout();
         if (reservation.getRoom().getLayouts().size() == 1) {
             reservation.getRoom().setType(RoomType.MIXED);
             roomRepo.save(reservation.getRoom());
         }
-        layoutRepo.delete(reservation);
 
+        layoutRepo.delete(reservation);
         return true;
     }
 
-    public boolean setRoomType(int person_id, RoomType type) {
-        Layout reservation = getReservation(person_id);
+    public boolean setRoomType(RoomType type) {
+        return setRoomType(user.getUser().getLayout().getRoom(), type);
+    }
 
-        for (Layout l : reservation.getRoom().getLayouts()) {
+    public boolean setRoomType(Room room, RoomType type) {
+        if (room == null || type == null) return false;
+
+        for (Layout l : room.getLayouts()) {
             if (!type.isGenderAllowed(l.getPerson().getGender())) return false;
         }
 
-        reservation.getRoom().setType(type);
-        roomRepo.save(reservation.getRoom());
-
+        room.setType(type);
+        roomRepo.save(room);
         return true;
     }
 }
