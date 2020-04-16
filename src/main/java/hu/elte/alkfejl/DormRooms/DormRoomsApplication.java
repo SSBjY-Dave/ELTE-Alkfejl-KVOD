@@ -8,7 +8,7 @@ import java.util.Random;
 
 @SpringBootApplication
 public class DormRoomsApplication {
-	public static SecureRandom globalSecureRandomGenerator = new SecureRandom();
+	
 	public static void main(String[] args) {
 		SpringApplication.run(DormRoomsApplication.class, args);
 	}
