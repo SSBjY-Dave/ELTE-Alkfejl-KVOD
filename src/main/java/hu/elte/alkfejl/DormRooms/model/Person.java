@@ -56,13 +56,6 @@ public class Person {
     private Role role;
 
 
-    private static String generateInviteToken() throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] inviteTokenRawBytes = new byte[64];
-        DormRoomsApplication.globalSecureRandomGenerator.nextBytes(inviteTokenRawBytes);
-        return new String(Base64.encodeBase64(md.digest(inviteTokenRawBytes)));
-    }
-
     public int getId() {
         return id;
     }

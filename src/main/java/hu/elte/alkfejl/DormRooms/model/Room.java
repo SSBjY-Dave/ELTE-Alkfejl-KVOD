@@ -43,16 +43,6 @@ public class Room {
     @Enumerated(EnumType.STRING)
     private RoomType type;
 
-    public Layout getPersonReservation(Person p) {
-        for (Layout l : layouts) {
-            if (l.getPerson().equals(p)) {
-                return l;
-            }
-        }
-
-        return null;
-    }
-
     // boilerplate
     public int getId() {
         return id;
