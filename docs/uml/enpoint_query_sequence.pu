@@ -1,0 +1,19 @@
+@startuml
+
+actor Frontend
+boundary "REST controller" as REST
+control Service
+control "CRUD repository" as CRUD
+database Database
+
+Frontend -> REST : request
+REST -> Service : request data manupulation / query
+Service -> CRUD : request CRUD function
+CRUD -> Database : do requested function
+Database --> CRUD : data
+CRUD --> Service : data
+Service --> REST : result
+REST --> Frontend : result
+
+
+@enduml
