@@ -27,4 +27,10 @@ public class MainController {
     public boolean authenticateUser() {
         return true;
     }
+
+    @PostMapping("/activateAccount/{inviteToken}")
+    public boolean activateAccount(@PathVariable String inviteToken, @RequestBody String password) {
+        UserModeService ums = UserModeService.getInstance();
+        return ums.setPassword(inviteToken, password);
+    }
 }

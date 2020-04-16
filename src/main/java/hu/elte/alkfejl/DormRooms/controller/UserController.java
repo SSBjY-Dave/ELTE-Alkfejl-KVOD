@@ -32,7 +32,7 @@ public class UserController {
         return ums.cancelReservation();
     }
 
-    @PostMapping("/user/setRoomType/")
+    @PostMapping("/user/setRoomType")
     public boolean setRoomType(@RequestBody RoomType type) {
         UserModeService ums = UserModeService.getInstance();
         return ums.setRoomType(type);
